@@ -1,0 +1,347 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+		<link href="/dmb/css/bootstrap.css" rel="stylesheet" media="screen">
+		<link rel="stylesheet" href="/dmb/css/jquery.sidr.dark.css">
+		<link href="/dmb/css/custom.css" rel="stylesheet" media="screen">
+		
+    
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script>
+			window.jQuery || document.write('<script src="/dmb/js/dist/jquery.min.js"/>')
+		</script>
+		<script src="/dmb/js/dist/utils.min.js"></script>
+		<script src="/dmb/js/dist/angular-combined.min.js"></script>
+		<script src="/dmb/js/dist/bootstrap-combined.min.js"></script>
+		<script src="/dmb/js/dist/dmb-client.min.js"></script>
+		<script src="/dmb/js/apps/conversations/conversationsApp.js"></script>
+		<script src="/dmb/js/apps/external/external.js"></script>
+		<script src="/dmb/js/apps/external/analytics.js"></script>    
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <proto-element></proto-element>
+
+@demo
+-->
+
+<dom-module id="bank-loan-application">
+
+  <template>
+  
+    <iron-ajax
+      id="ajax"
+      contentType="application/json"
+      url=""
+      handle-as="json"
+      on-response="handleResponse"
+      debounce-duration="300">
+    </iron-ajax>
+
+<div ng-controller="FormAttachmentCtrl" ng-app="ConversationsApp" ui-i18n data-options="ConversationsApp:i18nConfig" authuser data-roles="ConversationsApp:roles">
+<div id="cBody" class="communication-body">
+	<div class="communication-msg">
+		<p>
+			Dear <span>{{userProfile.firstName}}</span> <span>{{userProfile.lastName}}</span>,
+		</p>
+
+		<p>
+			Congratulations, your 55 Day Visa Card has been approved with a credit limit of $8,000.00
+		</p>
+		<br><h4>Next steps</h4>
+		<p>Your reference number is: 125487954</p>
+		<p>
+			To finalise the application we require 1 of the following items:
+		</p>
+
+		<ul>
+			<li>
+				Your last two (2) pay slips containing year-to-date totals; or
+			</li>
+			<li>
+				Your last four consecutive (4) pay slips if there are no year-to-date totals
+			</li>
+
+			<br>
+			<p>
+			If you mentioned any other income on your application form, youâ€™ll also need to provide the relevant documents from the list below:
+			</p>
+
+			<li>
+				Interest advice(s) from any financial institution in your name for the last financial year
+			</li>
+			<li>
+				Statement(s) issued to you by, or on behalf of, institutions for the last financial year, setting out dividend payments or income from securities or other investments held by you
+			</li>
+			<li>
+				Real estate agent statement(s), or statement(s) issued by your financial institution, noting your rental income for the last financial year
+			</li>
+
+		</ul>
+
+		<p>
+			On receipt of this information, your card(s) will be sent to your home or nominated branch. We will notify you when cards are available for collection.
+		</p>
+
+		<p>
+			You can conveniently upload this information online from your computer or mobile device now or at any time that is more convenient.
+		</p>
+
+		<br>
+
+		<h4>Things you should know</h4>
+		<p><a href="http://www.westpac.com.au/docs/pdf/pb/Flexi_Loan_Conditions.pdf" target="_blank">Flexi Loan - Conditions of Use <small>(PDF 98 kb)</small></a></p> <br>
+
+		<h4>Contact Details</h4>
+		<p>Toll free within Australia â€“ 1300 720 697 (7 days a week, 8am to 8pm)</p>
+
+	</div><!-- /.communication-msg -->
+
+	<!-- Only show this after revisiting the form. On first submit, the success message above should show. -->
+	<div ng-show="selectedDocument.formStatus == 'SUBMITTED' && !formSubmitted" class="alert alert-success communication-thank-you">
+		<h4>Thank you</h4> <span>You submitted the form on {{selectedDocument.submitDate | date:'dd/MM/yyyy'}} <!--small>{{selectedDocument.submitDate | date:'hh:mm a'}}</small--></span>
+	</div>
+
+	<div class="communication-action" ng-hide="selectedDocument.formStatus == 'SUBMITTED' || formSubmitted">
+		<div ng-show="commFormData.attachments.length>0">
+			<h4>Upload support documentation</h4>
+
+			<div id="uploadList" class="box p-box">
+				<div class="day" ng-repeat="attachment in commFormData.attachments">
+					<p>
+						{{attachment.fileName}}
+					</p>
+					<div class="action-icons">
+						<a href="#" class="remove" alt="remove subscription" ng-click="removeVaultDoc(this)"> <i class="fa fa-times" aria-hidden="true"></i> </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	<form name="communicationForm" class="form-horizontal" role="form" novalidate>
+		<input type="file" accept="image/*" id="chooseFile" capture="camera" class="hidden">
+
+		<button id="choose" class="btn btn-secundary" ng-click="modals.uploadFile(true)">
+			<i class="fa fa-upload" aria-hidden="true"></i> Upload file
+		</button>
+
+		<button id="" class="btn btn-secundary" ng-disabled="documents.length==0" ng-click="openVaultModal()">
+			<i class="fa fa-file-text-o" aria-hidden="true"></i>
+			Upload file from my vault
+		</button>
+		<br>
+		<br>
+
+		<button id="" class="btn btn-primary" ng-click="submitForm()" ng-disabled="commFormData.attachments.length ===0">
+			Send
+		</button>
+	</form>
+	</div><!-- /.communication-action -->
+</div><!-- /.communication-body -->
+
+<div status-messages>
+		<div id="success">
+			<div status-message class="alert alert-success" style="display:none" data-persist="true" status-code="COMMUNICATION_UPDATED">
+					<button class="close">
+						&times;
+					</button>
+					<h4><i class="icon-exclamation-sign"> </i><span>Thank you</span></h4>
+					<span>You have successfully submitted the communication</span>
+				</div>
+			</div>
+			<div id="errors">
+				<div status-message class="alert alert-danger alert-dismissable" style="display:none" status-code="UNKNOWN_ERROR">
+					<button class="close">
+						&times;
+					</button>
+					<h4><i class="icon-exclamation-sign"> </i><span>Error</span></h4>
+					<span>An unknown error has occurred</span>
+				</div>
+				<div status-message class="alert alert-danger alert-dismissable" style="display:none" status-code="VALIDATION_FAILED">
+					<button class="close">
+						&times;
+					</button>
+					<h4><i class="icon-exclamation-sign"> </i><span>Error</span></h4>
+					<span>Validation failed</span>
+				</div>
+				<div status-message class="alert alert-danger alert-dismissable" style="display:none" status-code="ALREADY_SENT">
+					<button class="close">
+						&times;
+					</button>
+					<h4><i class="icon-exclamation-sign"> </i><span>Error</span></h4>
+					<span>The communication item has already been updated</span>
+				</div>
+			</div>
+	</div>
+
+
+<!-- MODAL -->
+			<div class="modal fade" id="uploadFileModal" modal="uploadFileModal">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" ng-click="modals.uploadFile(false)" aria-hidden="true">
+								&times;
+							</button>
+							<h4 class="modal-title">Upload file</h4>
+						</div>
+						<div class="modal-body">
+							<div status-messages>
+								<div id="errors" >
+									<div status-message class="alert alert-danger" style="display:none" status-code="RESOURCE_EXISTS">
+										<button class="close">&times;</button>
+										<h4><i class="icon-exclamation-sign"> </i> <span>Error</span></h4>
+										<span>Document with the same name already exists.</span>
+									</div>
+
+									<div status-message class="alert alert-danger" style="display:none" status-code="VALIDATION_FAILED">
+										<button class="close">&times;</button>
+										<h4><i class="icon-exclamation-sign"> </i> <span>Error</span></h4>
+										<span>The input file is invalid.</span>
+									</div>
+
+									<div status-message class="alert alert-danger" style="display:none" status-code="SIZE_ALLOCATION_REACHED">
+										<button class="close">&times;</button>
+										<h4><i class="icon-exclamation-sign"> </i> <span>Error</span></h4>
+										<span>The file to be uploaded will exceed allocated storage capacity.</span>
+									</div>
+
+									<div status-message class="alert alert-danger" style="display:none" status-code="SIZE_LIMIT_EXCEEDED">
+										<button class="close">&times;</button>
+										<h4><i class="icon-exclamation-sign"> </i> <span>Error</span></h4>
+										<span>The file has exceeded size limit. Please select a different file.</span>
+									</div>
+
+									<div status-message class="alert alert-danger" style="display:none" status-code="FILE_TYPE_INVALID">
+										<button class="close">&times;</button>
+										<h4><i class="icon-exclamation-sign"> </i> <span>Error</span></h4>
+										<span>File type is invalid.</span>
+									</div>
+
+								</div>
+	          				</div>
+							<form role="form" name="uploadForm" novalidate>
+								<fieldset>
+									<div form-group data-label="">
+										<div class="allowedFileTypes"><span><small>Allowed file types PDF, JPG, PNG and GIF</small></span></div>
+										<div><button class="btn btn-primary btn-large" ng-click="triggerFileInput($event, 'selectFile')">
+											<i class="fa fa-camera"></i> Choose file
+										</button></div>
+										<input file-uploader
+											type="file"
+											accept="image/jpeg, image/png, image/bmp, image/gif, application/pdf"
+											capture="camera"
+											id="selectFile"
+											class="hidden"
+											max-bytes="10485760"
+											disk-usage="diskUsage">
+										<!--<i class="fa fa-refresh fa-spin loading" ng-show="fileIsLoading"></i>-->
+										<div class="file-holder">
+											<img id="imageShow" ng-src="{{fileToUpload.target}}" alt="Image" width="50%" ng-show="(fileToUpload.target)"/>
+											<div ng-show="(!fileToUpload.target)">{{fileToUpload.name}}</div>
+										</div>
+									</div>
+								</fieldset>
+							</form>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" ng-click="modals.uploadFile(false)">
+								Close
+							</button>
+							<button type="button" class="btn btn-primary" ng-click="uploadFile()" ng-disabled="(!fileToUpload) || isLoading">
+								<i class="fa fa-spinner fa-spin" ng-show="isLoading"></i>
+								Upload
+							</button>
+						</div>
+					</div><!-- /.modal-content -->
+				</div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+
+<!-- MODAL -->
+<div class="modal fade" id="selectVaultModal" modal="selectVaultModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" aria-hidden="true" ng-click="closeVaultModal()">
+					&times;
+				</button>
+				<h4 class="modal-title">Vault</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row ">
+					<div class="col-md-12">
+						<div id="list-toggle" class="row list">
+
+							<!-- col-xs-6 col-sm-3 col-md-2 -->
+
+							<div class="col-xs-6 col-sm-3 col-md-3 col-lg-2"  ng-repeat="document in vaultDocuments" ng-include="'partials/forms/vault-tree.html'">
+							</div>
+
+						</div>
+						<div class="alert alert-danger" ng-show="documents.length==0" >
+							<h4><i class="icon-exclamation-sign"> </i> <span>Error</span></h4>
+							<span>The Vault is empty</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" ng-click="closeVaultModal()">
+					Close
+				</button>
+				<button id="uploadFromVault" type="button" class="btn btn-primary" ng-disabled="attachmentList.length===0" ng-click="uploadVaultDocuments()">
+					Upload
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+</div><!--LoanApplicationCtrl -->
+
+    
+  </template>
+
+  <script>
+    Polymer({
+      is: "bank-loan-application",
+      getConversations: function() {
+        console.log("getConversations");
+        this.$.ajax.url = "/dmbsrv/rest/user/b254b580-4cbe-11e3-8f96-0800200c1002/folder/Conversations/document";
+        this.$.ajax.generateRequest();
+      },
+     getAuthUser: function() {
+        console.log("getAuthUser");
+        this.$.ajax.url = "/dmbsrv/rest/auth";
+        this.$.ajax.generateRequest();
+      },      
+      ready: function() {
+        this.getAuthUser();
+        this.conversationItem = {
+          selectedDocument: {
+            formStatus: "SUBMITTED",
+            submitDate: "17/08/2015"
+          }
+        };
+      },
+      handleResponse: function(request) {
+          console.log(request.detail.response);
+          console.log(this.$.ajax.lastResponse);
+          this.userProfile = request.detail.response;
+      }      
+    });
+  </script>
+
+</dom-module>
